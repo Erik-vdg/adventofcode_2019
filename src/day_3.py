@@ -45,6 +45,16 @@ class Point(object):
         other = Point(0,0)
         return abs(self.x - other.x) + abs(self.y - other.y)
 
+    def on_segment(self, line_segment: 'LineSegment') -> Optional['LineSegment']:
+        # If point is on the segment, return a LineSegment between point_1 and this point
+        if isinstance(line_segment, LineSegment):
+            if (line_segment.orientation == 'V' and self.x == line_segment.point_1.x) or (line_segment.orientation == 'H' and self.y == line_segment.point_1.y):
+                return LineSegment(line_segment.point_1, self)
+            else:
+                return None
+        else:
+            return NotImplemented
+
 
 class LineSegment(object):
     __slots__ = ['point_1', 'point_2', 'orientation']
@@ -58,7 +68,6 @@ class LineSegment(object):
             self.orientation = 'H'
 
     def __repr__(self) -> str:
-        #return(f'IntcodeComputer(tape={repr(self._tape)}, head={self._head})')
         return(f'{self.__class__.__name__}(point_1={repr(self.point_1)}, point_2={repr(self.point_2)})')
 
     
@@ -75,6 +84,13 @@ class LineSegment(object):
             raise NotImplemented
         destination = direction_map[vector[0]] * int(vector[1:]) + origin
         return cls(origin, destination)
+
+    @property
+    def length(self) -> int:
+        if self.orientation == 'H':
+            return abs(self.point_2.x - self.point_1.x)
+        else:
+            return abs(self.point_2.y - self.point_1.y)
 
 
     def intersects(self, other_linesegment: 'LineSegment') -> Optional[Point]:
@@ -117,16 +133,31 @@ class Wire(object):
     def __repr__(self) -> str:
         return(f'{self.__class__.__name__}({repr(self.segments)})')
 
-    def intersects(self, other_wire: 'Wire') -> List[Point]:
-        #ret = []
-        #for this_segment in self.segments:
-        #    for other_segment in other_wire.segments:
-        #        point = this_segment.intersects(other_segment)
-        #        if point is not None:
-        #            print(f'This segment: {this_segment}, Other Segment: {other_segment}, Intersection: {point}')
-        #            ret.append(point)
-        return [point for point in [this_segment.intersects(other_segment) for this_segment in self.segments for other_segment in other_wire.segments] if point is not None]
-        #return ret
+    def intersects(self, other: Union['Wire', LineSegment]):
+        if isinstance(other, self.__class__):
+            return [point for point in [this_segment.intersects(other_segment) for this_segment in self.segments for other_segment in other.segments] if point is not None]
+        elif isinstance(other, LineSegment):
+            return NotImplemented
+        else:
+            return NotImplemented
+
+
+    def distance_on_wire(self, point: Point) -> Optional[int]:
+        distance = 0
+        for segment in self.segments:
+            potential_subsegment = point.on_segment(segment)
+            if potential_subsegment:
+                distance += potential_subsegment.length
+                return distance
+            else:
+                distance += segment.length
+        return None
+
+    def wire_intersection_distances(self, other_wire: 'Wire') -> List[int]:
+        intersections = self.intersects(other_wire)
+        return [self.distance_on_wire(p) + other_wire.distance_on_wire(p) for p in intersections]
+
+
 
 def main():
     with open('data/day_3.txt', 'r') as day_3_file:
@@ -141,14 +172,8 @@ def main():
     sorted_intersections = list(sorted(map(Point.manhattan_distance, intersections)))
     print(f'Part 1 Answer: {sorted_intersections[0]}')
 
-    #seg_1 = LineSegment(Point(5, 10), Point(8, 10))
-    #seg_2 = LineSegment(Point(6, 8), Point(6, 15))
-    #seg_3 = LineSegment(Point(0, 0), Point(1, 0))
-    #print(seg_1.intersects(seg_2))
-    #print(seg_1.intersects(seg_3))
+    print(f'Part 2 Answer: {sorted(red_wire.wire_intersection_distances(green_wire))[0]}')
 
-
-    
 
 if __name__ == '__main__':
     main()
