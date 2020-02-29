@@ -17,6 +17,7 @@ def is_elligible(number: int) -> bool:
             ascending = False
     return adjacent_match and ascending
 
+
 def is_elligible_2(number: int) -> bool:
     # is 6-digit number
     if not (100000 <= number <= 999999):
@@ -32,9 +33,9 @@ def is_elligible_2(number: int) -> bool:
             ascending = False
     for i in range(10):
         if str(i)*2 in numstr and str(i)*3 not in numstr:
-            adjacent_match = True 
+            adjacent_match = True
     return adjacent_match and ascending
-    
+
 
 def main():
     lower_bound = 372304
@@ -45,7 +46,6 @@ def main():
 
     valid_passwords_2 = [x for x in valid_passwords if is_elligible_2(x)]
     print(f'Part 2 answer: {len(valid_passwords_2)}')
-
 
 
 if __name__ == '__main__':

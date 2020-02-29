@@ -1,5 +1,4 @@
 from intcode.IntcodeComputer import IntcodeComputer
-import sys
 
 
 if __name__ == '__main__':

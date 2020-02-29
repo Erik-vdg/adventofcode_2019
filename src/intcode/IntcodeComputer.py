@@ -1,4 +1,4 @@
-from collections import MutableSequence
+from collections.abc import MutableSequence
 from typing import List, Optional, Iterable, Union
 from pathlib import Path
 
@@ -33,7 +33,7 @@ class IntcodeComputer(MutableSequence):
     def from_intcode_file(cls, path: Union[Path, str], head: int = 0):
         if type(path) is str:
             path = Path(path)
-        if path.suffix != '.intcode': # type: ignore
+        if path.suffix != '.intcode':  # type: ignore
             raise InvalidIntcodeFormatError(f'{str(path)} not an intcode file!')
         intcode_list = []
         with open(path, mode='r') as intcode_file:

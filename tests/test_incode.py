@@ -33,7 +33,7 @@ def test_halt():
 
 def test_unrecognized_opcode():
     with pytest.raises(UnrecognizedOpcodeError):
-        test_tape = [-1, 0, 0, 0]
+        test_tape = [98, 0, 0, 0]
         ic = IntcodeComputer(test_tape)
         ic._process_at_head(advance_afterward=False)
 

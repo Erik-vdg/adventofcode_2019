@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import IntEnum, unique
-from typing import Type, Iterable, Tuple, List, MutableSequence, Dict, TypeVar
+from typing import Type, Tuple, List, MutableSequence, Dict
 from .IntcodeException import UnrecognizedOpcodeError, HaltExecutionError, InvalidIntcodeFormatError
+
 
 @unique
 class OpcodeType(IntEnum):
@@ -17,7 +18,7 @@ class OpcodeBase(ABC):
     # The __init_subclass__ method automatically registers each subclassed opcode to the OpcodeFactory
 
     def __init_subclass__(cls, opcode_value: OpcodeType, **kwargs):
-        super().__init_subclass__(**kwargs) # type: ignore
+        super().__init_subclass__(**kwargs)  # type: ignore
         OpcodeFactory.register_opcode(opcode_value, cls)
 
     @abstractmethod
@@ -27,6 +28,7 @@ class OpcodeBase(ABC):
     @abstractmethod
     def process(self, tape: MutableSequence, head: int):
         pass
+
 
 class OpcodeFactory(object):
 
@@ -138,11 +140,15 @@ class HaltOpcode(OpcodeBase, opcode_value=OpcodeType.HALT):
         if params is None:
             params = [0]
         self.params = params
-    
-    def process(self, tape: MutableSequence, head:int) -> None:
+
+    def process(self, tape: MutableSequence, head: int) -> None:
         raise HaltExecutionError('Halting execution due to instruction')
 
+
 def split_into_opcode_and_parameters(opcode_val: int) -> Tuple[OpcodeType, List[int]]:
-    opcode = OpcodeType(opcode_val % 100)
+    try:
+        opcode = OpcodeType(opcode_val % 100)
+    except ValueError as err:
+        raise UnrecognizedOpcodeError(f'Opcode Value of {opcode_val} is not recognized!') from err
     parameters = [int(p) for p in str(opcode_val // 100)][::-1]
     return (opcode, parameters)

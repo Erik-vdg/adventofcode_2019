@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod, abstractproperty
-from typing import Callable, Iterable, Tuple, Optional, Type
+from typing import Iterable, Tuple, Optional, Type
 from collections import Mapping
 from .IntcodeException import HaltExecutionError, UnrecognizedOpcodeError, InvalidIntcodeFormatError
+
 
 class Opcode(ABC):
     @abstractproperty
@@ -17,7 +18,7 @@ class AddOpcode(Opcode):
     @property
     def stride(self) -> int:
         return 4
-    
+
     def process(self, IntcodeTape: Iterable, head: int) -> Tuple[int, None]:
         x_idx, y_idx, result_idx = IntcodeTape[head + 1: head + self.stride]
         IntcodeTape[result_idx] = IntcodeTape[x_idx] + IntcodeTape[y_idx]
@@ -49,6 +50,7 @@ class InputOpcode(Opcode):
             raise InvalidIntcodeFormatError(f'{input_val} cannot be converted to an Integer!')
         return (head + self.stride, None)
 
+
 class OutputOpcode(Opcode):
     @property
     def stride(self) -> int:
@@ -63,8 +65,8 @@ class HaltOpcode(Opcode):
     @property
     def stride(self) -> int:
         return 0
-    
-    def process(self, IntcodeTape: Iterable, head:int) -> None:
+
+    def process(self, IntcodeTape: Iterable, head: int) -> None:
         raise HaltExecutionError('Halting execution due to instruction')
 
 
@@ -91,4 +93,3 @@ class OpcodeRegistry(Mapping):
 
     def __len__(self):
         return len(self._opcode_map)
-
