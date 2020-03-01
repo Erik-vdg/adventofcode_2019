@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from enum import IntEnum, unique
-from typing import Type, Tuple, List, MutableSequence, Dict
-from .IntcodeException import UnrecognizedOpcodeError, HaltExecutionError, InvalidIntcodeFormatError
+from typing import Dict, List, MutableSequence, Tuple, Type
+
+from .IntcodeException import (HaltExecutionError, InvalidIntcodeFormatError,
+                               UnrecognizedOpcodeError)
 
 
 @unique
@@ -39,7 +41,7 @@ class OpcodeFactory(object):
         if opcode_value in OpcodeType and opcode_value not in cls._opcode_registry.keys():
             cls._opcode_registry[opcode_value] = opcode
         else:
-            raise UnrecognizedOpcodeError(f'Opcode Value of {opcode_value} is not recognized!')
+            raise UnrecognizedOpcodeError(f"Opcode Value of {opcode_value} is not recognized!")
 
     @classmethod
     def create(cls, opcode_value: int) -> OpcodeBase:
@@ -48,7 +50,9 @@ class OpcodeFactory(object):
             opcode = cls._opcode_registry[val]
             return opcode(params=params)
         except KeyError as err:
-            raise UnrecognizedOpcodeError(f'Opcode Value of {opcode_value} is not recognized!') from err
+            raise UnrecognizedOpcodeError(
+                f"Opcode Value of {opcode_value} is not recognized!"
+            ) from err
 
 
 class AddOpcode(OpcodeBase, opcode_value=OpcodeType.ADD):
@@ -62,7 +66,7 @@ class AddOpcode(OpcodeBase, opcode_value=OpcodeType.ADD):
         self.params = params
 
     def process(self, tape: MutableSequence, head: int) -> Tuple[int, None]:
-        x_idx, y_idx, result_idx = tape[head + 1: head + AddOpcode.stride]
+        x_idx, y_idx, result_idx = tape[head + 1 : head + AddOpcode.stride]
         if self.params[0] == 0:
             x_val = tape[x_idx]
         elif self.params[0] == 1:
@@ -86,7 +90,7 @@ class MultiplyOpcode(OpcodeBase, opcode_value=OpcodeType.MULTIPLY):
         self.params = params
 
     def process(self, tape: MutableSequence, head: int) -> Tuple[int, None]:
-        x_idx, y_idx, result_idx = tape[head + 1: head + MultiplyOpcode.stride]
+        x_idx, y_idx, result_idx = tape[head + 1 : head + MultiplyOpcode.stride]
         if self.params[0] == 0:
             x_val = tape[x_idx]
         elif self.params[0] == 1:
@@ -113,7 +117,9 @@ class InputOpcode(OpcodeBase, opcode_value=OpcodeType.INPUT):
             input_val = input(f"Input required from position {head}: ")
             tape[result_idx] = int(input_val)
         except ValueError as err:
-            raise InvalidIntcodeFormatError(f'{input_val} cannot be converted to an Integer!') from err
+            raise InvalidIntcodeFormatError(
+                f"{input_val} cannot be converted to an Integer!"
+            ) from err
         return (head + self.stride, None)
 
 
@@ -142,13 +148,13 @@ class HaltOpcode(OpcodeBase, opcode_value=OpcodeType.HALT):
         self.params = params
 
     def process(self, tape: MutableSequence, head: int) -> None:
-        raise HaltExecutionError('Halting execution due to instruction')
+        raise HaltExecutionError("Halting execution due to instruction")
 
 
 def split_into_opcode_and_parameters(opcode_val: int) -> Tuple[OpcodeType, List[int]]:
     try:
         opcode = OpcodeType(opcode_val % 100)
     except ValueError as err:
-        raise UnrecognizedOpcodeError(f'Opcode Value of {opcode_val} is not recognized!') from err
+        raise UnrecognizedOpcodeError(f"Opcode Value of {opcode_val} is not recognized!") from err
     parameters = [int(p) for p in str(opcode_val // 100)][::-1]
     return (opcode, parameters)

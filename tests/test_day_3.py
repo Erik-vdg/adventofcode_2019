@@ -4,8 +4,15 @@ import sys
 here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, here)
 
-from src.day_3 import Point, LineSegment, Wire  # noqa: E402
+from src.day_3 import LineSegment, Point, Wire  # noqa: E402
 
+
+def test_point():
+    point_1 = Point(x=2, y=3)
+    point_2 = Point(x=1, y=1)
+    point_3 = point_1 - point_2
+    assert point_3 == Point(x=1, y=2)
+    assert 3 * point_1 == Point(x=6, y=9)
 
 def test_segment_intersection():
     segment_1 = LineSegment(point_1=Point(x=3, y=5), point_2=Point(x=3, y=2))
@@ -81,3 +88,15 @@ def test_point_on_wire_distance_3():
     wire_2 = Wire.from_raw_wire_list(raw_wire_2.split(","))
 
     assert sorted(wire_1.wire_intersection_distances(wire_2))[0] == 410
+
+def test_wire_intersecting_linesegment():
+    raw_wire_1 = "R8,U5,L5,D3"
+    wire_1 = Wire.from_raw_wire_list(raw_wire_1.split(","))
+    segment_1 = LineSegment(point_1=Point(x=3, y=5), point_2=Point(x=3, y=2))
+    wire_1.intersects(segment_1)
+
+def test_wire_point_not_intersecting():
+    raw_wire_1 = "R8,U5,L5,D3"
+    wire_1 = Wire.from_raw_wire_list(raw_wire_1.split(","))
+    point_1 = Point(x=100, y=100)
+    assert wire_1.distance_on_wire(point_1) is None

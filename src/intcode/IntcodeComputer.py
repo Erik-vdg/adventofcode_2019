@@ -1,6 +1,6 @@
 from collections.abc import MutableSequence
-from typing import List, Optional, Iterable, Union
 from pathlib import Path
+from typing import Iterable, List, Optional, Union
 
 from .IntcodeException import HaltExecutionError, InvalidIntcodeFormatError
 from .OpcodeFactory import OpcodeFactory

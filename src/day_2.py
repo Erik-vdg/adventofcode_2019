@@ -1,6 +1,5 @@
 from intcode.IntcodeComputer import IntcodeComputer
 
-
 if __name__ == '__main__':
     ic = IntcodeComputer.from_intcode_file('data/day_2_input.intcode')
     ic[1] = 12

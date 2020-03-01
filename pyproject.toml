@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "adventofcode_2019"
-version = "0.5.1"
+version = "0.5.2-alpha.0"
 description = "Project to track the 2019 Advent of Code project"
 authors = ["Erik van der Goetz <erik.vandergoetz@gmail.com>"]
 license = "MIT"
@@ -8,14 +8,16 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.6"
+pre-commit = "^2.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.3.5"
 flake8 = "^3.7.9"
 mypy = "^0.761"
 black = "^19.10b0"
-coverage = "^5.0.3"
+coverage = {extras = ["toml"], version = "^5.0.3"}
 pytest-cov = "^2.8.1"
+pre-commit = "^2.1.1"
 
 [tool.black]
 line-length = 100
@@ -39,6 +41,24 @@ exclude = '''
   | profiling
 )/
 '''
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "return NotImplemented",
+  "raise NotImplementedError",
+  "if __name__ == \"__main__\"",
+  "if __name__ == '__main__'",
+  "def main()",
+  "import",
+  "@abstractmethod"
+]
+skip_empty = true
+
 
 [build-system]
 requires = ["poetry>=0.12"]

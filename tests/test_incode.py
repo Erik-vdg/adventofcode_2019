@@ -1,13 +1,43 @@
-import pytest
-import sys
 import os
+import sys
 from io import StringIO
+
+import pytest
+
+from src.intcode.IntcodeComputer import IntcodeComputer  # noqa E402
+from src.intcode.IntcodeException import HaltExecutionError  # noqa E402
+from src.intcode.IntcodeException import (InvalidIntcodeFormatError,
+                                          UnrecognizedOpcodeError)
 
 here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, here)
 
-from src.intcode.IntcodeComputer import IntcodeComputer # noqa E402
-from src.intcode.IntcodeException import UnrecognizedOpcodeError, HaltExecutionError, InvalidIntcodeFormatError # noqa E402
+
+
+def test_computer_basic():
+    test_tape = [1, 0, 0, 3]
+    ic = IntcodeComputer(test_tape)
+    assert str(ic) == "[1, 0, 0, 3]"
+    assert ic == IntcodeComputer.from_iterable((1, 0, 0, 3))
+    assert ic != IntcodeComputer.from_iterable((1, 1, 1, 1))
+    assert len(ic) == 4
+    assert ic[0] == 1
+    ic[1] = 100
+    assert ic[1] == 100
+
+    with pytest.raises(IndexError):
+        ic.head = 100
+
+    icfile = 'data/day_2_input.intcode'
+    ic_2 = IntcodeComputer.from_intcode_file(icfile)
+    ic_list = []
+    with open(icfile, mode='r') as intcode_file:
+        for line in intcode_file.readlines():
+            ic_list.extend([int(item) for item in line.split(',')])
+    assert ic_2._tape == ic_list
+
+    with pytest.raises(InvalidIntcodeFormatError):
+        IntcodeComputer.from_intcode_file('data/day_1_input.txt')
 
 
 def test_add():

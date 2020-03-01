@@ -1,5 +1,5 @@
-from typing import List, Optional, Union, Type
 import numbers
+from typing import List, Optional, Type, Union
 
 
 class Point(object):
@@ -12,7 +12,7 @@ class Point(object):
     def __eq__(self, other: object):
         if not isinstance(other, Point):
             return NotImplemented
-        return self.x == other.x & self.y == other.y
+        return self.x == other.x and self.y == other.y
 
     def __add__(self, other: "Point"):
         if not isinstance(other, Point):

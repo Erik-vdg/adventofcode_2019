@@ -12,21 +12,14 @@ def calc_fuel_recurse(mass: int) -> int:
         return mass + calc_fuel_recurse(calc_fuel(mass))
 
 
-def main(inputfile: str, recurse: bool):
+def main(inputfile: str):
     with open(inputfile, 'r') as infile:
-        if recurse:
-            print(sum(calc_fuel_recurse(int(row)) - int(row) for row in infile))
-        else:
-            print(sum(calc_fuel(int(row)) for row in infile))
+        part_1 = sum(calc_fuel(int(row)) for row in infile)
+        print(f'Part 1 Answer: {part_1}')
+        part_2 = sum(calc_fuel_recurse(int(row)) - int(row) for row in infile)
+        print(f'Part 2 Answer: {part_2}')
 
 
 if __name__ == '__main__':
     file = 'data/day_1_input.txt'
-    main(file, True)
-
-    # Should return 2
-    # print(calc_fuel_recurse(14) - 14)
-    # Should return 966
-    # print(calc_fuel_recurse(1969) - 1969)
-    # Should return 50346
-    # print(calc_fuel_recurse(100756) - 100756)
+    main(file)
